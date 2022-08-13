@@ -7,7 +7,13 @@ export class DatabaseService implements TypeOrmOptionsFactory {
   constructor(private configService: ConfigService) {}
 
   createTypeOrmOptions(): TypeOrmModuleOptions {
+    const ssl = this.configService.get('STAGE') === 'production';
+
     return {
+      ssl,
+      extra: {
+        ssl: ssl ? { rejectUnauthorized: false } : null,
+      },
       type: 'postgres',
       host: this.configService.get<string>('db.host'),
       port: this.configService.get<number>('db.port'),
